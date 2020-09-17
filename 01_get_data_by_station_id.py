@@ -206,6 +206,6 @@ def main02():
 
 
 if __name__ == "__main__":
-    #main01()
+    main01()
     main02()
 
