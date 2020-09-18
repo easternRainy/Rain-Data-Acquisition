@@ -11,6 +11,7 @@ import os
 import sys
 from threading import Thread
 from datetime import timedelta, date
+from multiprocessing import Process
 
 # create project structure
 if "OutputData" not in os.listdir():
@@ -143,17 +144,14 @@ class Worker(Thread):
 # In[7]:
 
 
-def main01():
-    station_id = str(sys.argv[1])
+def main01(station_id):
+    
     df = pd.DataFrame(columns=['Time', 'Time_End', station_id])
     df['Time'] = all_timestamps
     df['Time_End'] = all_endtimestamps
     df = df.set_index('Time')
-    
-    
-    
+       
     threads = []
-    
     
     for year in range(START_YEAR, END_YEAR+1):
             
@@ -196,8 +194,8 @@ def process_network_failure(station_id):
 # In[2]:
 
 
-def main02():
-    station_id = str(sys.argv[1])
+def main02(station_id):
+    
     df = process_network_failure(station_id)
     df.to_csv(f"OutputData02/{station_id}.csv")
 
@@ -205,7 +203,23 @@ def main02():
 # In[ ]:
 
 
+def main00(station_id):
+    main01(station_id)
+    main02(station_id)
+
+
+def main():
+    station_ids = [str(sys.argv[i]) for i in range(1, len(sys.argv))]
+
+    # in args=(station_id, ) the ", " is necessary
+    processes = [Process(target=main00, args=(station_id,)) for station_id in station_ids]
+    
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
+
+
 if __name__ == "__main__":
-    main01()
-    main02()
+    main()
 
