@@ -13,6 +13,8 @@ from threading import Thread
 from datetime import timedelta, date
 from multiprocessing import Process
 
+from config import *
+
 # create project structure
 if "OutputData" not in os.listdir():
     os.mkdir("OutputData")
@@ -29,7 +31,7 @@ if "OutputData03" not in os.listdir():
 
 class TimeStamp:
         
-    def __init__(self, date, time="0800"):
+    def __init__(self, date, time=TIME):
         self.date = date
         self.time = time
         self.tomorrow = self.date + timedelta(1)
@@ -44,12 +46,6 @@ class TimeStamp:
         return date.strftime("%Y%m%d"+self.time)
 
 
-base_url = "http://bmxx.swj.sh.gov.cn/DataService/JsonService.svc/GetYuLiangTongJi/4/all?"
-START_YEAR = 1990
-END_YEAR = 2020
-START_TIME = TimeStamp(date(1990, 1, 1))
-END_TIME = TimeStamp(date(2020, 9, 2))
-
 
 # In[4]:
 
@@ -60,11 +56,11 @@ def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
 
-start_date = date(1990, 1, 1)
-end_date = date(2020, 9, 2)
+start_date = date(START_YEAR, START_MON, START_DAY)
+end_date = date(END_YEAR, END_MON, END_DAY)
 
-all_timestamps = [single_date.strftime("%Y%m%d")+"0800" for single_date in daterange(start_date, end_date)]
-all_endtimestamps = [(single_date+timedelta(1)).strftime("%Y%m%d")+"0800" for single_date in daterange(start_date, end_date)]
+all_timestamps = [single_date.strftime("%Y%m%d")+TIME for single_date in daterange(start_date, end_date)]
+all_endtimestamps = [(single_date+timedelta(1)).strftime("%Y%m%d")+TIME for single_date in daterange(start_date, end_date)]
 
 
 # In[5]:
@@ -152,8 +148,8 @@ def main01(station_id):
     
     for year in range(START_YEAR, END_YEAR+1):
             
-        if year == 2020:
-            worker = Worker(df, year, station_id, end_date=date(2020,9,2))
+        if year == END_YEAR:
+            worker = Worker(df, year, station_id, end_date=end_date)
             worker.start()
             threads.append(worker)
 
