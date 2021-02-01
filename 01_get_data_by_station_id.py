@@ -109,12 +109,17 @@ class Worker(Thread):
     '''
     This class works in parallel to get data of some station_id in a year
     '''
-    def __init__(self, df, year, station_id, end_date=None):
+    def __init__(self, df, year, station_id, start_date=None, end_date=None):
         Thread.__init__(self)
         self.df = df
         self.year = year
         self.station_id = station_id
-        self.start_date = date(self.year, 1, 1)
+
+        if start_date == None:
+        	self.start_date = date(self.year, 1, 1)
+        else:
+        	self.start_date = start_date
+
         if end_date == None:
             self.end_date = date(self.year+1, 1, 1)
         else:
@@ -143,12 +148,26 @@ def main01(station_id):
     df['Time'] = all_timestamps
     df['Time_End'] = all_endtimestamps
     df = df.set_index('Time')
-       
-    threads = []
+
     
+    if START_YEAR == END_YEAR:
+        worker = Worker(df, START_YEAR, station_id, start_date=start_date, end_date=end_date)
+        worker.start()
+        worker.join()
+        df.to_csv(os.path.join("OutputData", f"{station_id}.csv"))
+        
+        return
+    
+       
+    
+    threads = []
     for year in range(START_YEAR, END_YEAR+1):
+        if year == START_YEAR:
+            worker = Worker(df, year, station_id, start_date=start_date)
+            worker.start()
+            threads.append(worker)
             
-        if year == END_YEAR:
+        elif year == END_YEAR:
             worker = Worker(df, year, station_id, end_date=end_date)
             worker.start()
             threads.append(worker)
