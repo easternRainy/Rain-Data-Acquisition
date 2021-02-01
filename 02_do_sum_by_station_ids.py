@@ -43,14 +43,14 @@ def main():
     for station_id in station_ids:
         assert (f"{station_id}.csv" in os.listdir("OutputData02"))
 
-    df_final = pd.read_csv(f"OutputData02/{station_ids[0]}.csv")
+    df_final = pd.read_csv(os.path.join("OutputData02", f"{station_ids[0]}.csv"))
     for i in range(1,len(station_ids)):
         curr_id = station_ids[i]
-        df_tmp = pd.read_csv(f"OutputData02/{curr_id}.csv")
+        df_tmp = pd.read_csv(os.path.join("OutputData02", f"{curr_id}.csv"))
         df_final[curr_id] = df_tmp[curr_id]
 
     df_final['Sum'] = df_final.apply(lambda x: do_sum(x, station_ids) , axis=1)
-    df_final.to_csv(f"OutputData03/Sum.csv")
+    df_final.to_csv(os.path.join("OutputData03", "Sum.csv"))
 
 
 # In[89]:

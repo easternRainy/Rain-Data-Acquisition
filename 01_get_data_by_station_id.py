@@ -44,9 +44,6 @@ class TimeStamp:
         return date.strftime("%Y%m%d"+self.time)
 
 
-# In[3]:
-
-
 base_url = "http://bmxx.swj.sh.gov.cn/DataService/JsonService.svc/GetYuLiangTongJi/4/all?"
 START_YEAR = 1990
 END_YEAR = 2020
@@ -170,7 +167,7 @@ def main01(station_id):
     for thread in threads:
         thread.join()
     
-    df.to_csv(f"OutputData/{station_id}.csv")
+    df.to_csv(os.path.join("OutputData", f"{station_id}.csv"))
 
 
 # # Part 2 Process Each -1
@@ -197,7 +194,7 @@ def process_network_failure(station_id):
 def main02(station_id):
     
     df = process_network_failure(station_id)
-    df.to_csv(f"OutputData02/{station_id}.csv")
+    df.to_csv(os.path.join("OutputData02", f"{station_id}.csv"))
 
 
 # In[ ]:
